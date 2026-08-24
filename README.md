@@ -6,21 +6,7 @@
 
 传统直接调制 DFB 激光器时，调制电流会同时影响激光器输出功率和激光频率，容易引入 **啁啾（Chirp）效应**，限制高速长距离传输性能。
 
-为了降低调制过程对激光器本身性能的影响，本项目采用：
-
-```
-DFB Laser
-    ↓
-Optical Carrier
-    ↓
-Mach-Zehnder Modulator (MZM)
-    ↓
-Optical Attenuator
-    ↓
-Eye Diagram / BER Analyzer
-```
-
-通过外部调制方式实现高速光信号生成，并利用眼图和误码率（BER）指标评价系统传输质量。
+为了降低调制过程对激光器本身性能的影响，本项目采用**外部调制**方式实现高速光信号生成，并利用眼图和误码率（BER）指标评价系统传输质量。
 
 ---
 
@@ -55,26 +41,12 @@ DFB 激光器由于具有：
 
 ---
 
-# 2. 仿真软件与环境
+# 2. 仿真环境
 
 ## Software
 
-* Ansys Lumerical INTERCONNECT
-* Version: 10.0.0
-
-## Simulation Type
-
-Optical system-level simulation
-
-## Analysis Methods
-
-主要采用：
-
-* Optical waveform analysis
-* Eye diagram analysis
-* BER estimation
-* Parameter sweep analysis
-
+* Ansys Lumerical INTERCONNECT 2024
+  
 ---
 
 # 3. 系统结构设计
