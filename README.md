@@ -1,348 +1,797 @@
-# DFB Laser External Modulation Optical Communication System
+# MRR-Lumerical 硅光子器件建模与仿真
 
-## 项目简介
+## Silicon Microring Resonator Simulation Based on Ansys Lumerical
 
-本项目基于 **Ansys Lumerical INTERCONNECT** 搭建，实现了一个基于 **DFB 半导体激光器（Distributed Feedback Laser）外部调制结构** 的高速光通信系统仿真。
+本项目使用 **Ansys Lumerical MODE / varFDTD** 对硅基微环谐振器（Microring Resonator, MRR）进行建模与数值仿真。
 
-传统直接调制 DFB 激光器时，调制电流会同时影响激光器输出功率和激光频率，容易引入 **啁啾（Chirp）效应**，限制高速长距离传输性能。
+项目主要研究微环谐振器中直波导与环形波导之间的倏逝场耦合、谐振光谱、环内电场分布，以及微环半径、耦合间隙等结构参数对器件光学性能的影响。
 
-为了降低调制过程对激光器本身性能的影响，本项目采用**外部调制**方式实现高速光信号生成，并利用眼图和误码率（BER）指标评价系统传输质量。
-
----
-
-# 1. 项目背景
-
-随着数据中心、5G/6G 通信以及高速光互连技术的发展，光通信系统对：
-
-* 更高传输速率
-* 更低误码率
-* 更长传输距离
-* 更稳定光源性能
-
-提出了更高要求。
-
-DFB 激光器由于具有：
-
-* 单纵模输出
-* 窄线宽
-* 高边模抑制比（SMSR）
-* 高稳定性
-
-被广泛应用于高速光通信系统。
-
-但是直接调制 DFB 激光器存在以下问题：
-
-1. 载流子变化导致频率漂移；
-2. 输出光谱展宽；
-3. 高速情况下产生严重啁啾；
-4. 限制系统带宽和传输距离。
-
-因此，本项目采用 **DFB 激光器作为连续光载波源，通过 MZM 外调制器加载高速 NRZ 数据**，实现高速低啁啾光通信。
+项目采用参数化 `Structure Group` 构建器件，使微环半径、波导宽度、耦合间隙和直波导长度等参数可以直接在 Lumerical Properties 面板中修改，便于后续进行参数扫描（Parameter Sweep）和结构优化。
 
 ---
 
-# 2. 仿真环境
+# 1. 项目简介
 
-## Software
+微环谐振器（Microring Resonator, MRR）是一种典型的集成光子学器件，由环形波导和邻近的直波导构成。
 
-* Ansys Lumerical INTERCONNECT 2024
-  
----
+当直波导中的光传播至微环附近时，由于波导模式的倏逝场重叠，一部分光可以耦合进入微环。
 
-# 3. 系统结构设计
+当光在微环中传播一周所积累的相位满足谐振条件时，环内光场发生相干增强，从而在输出端产生明显的透射谱变化。
 
-## 结构图如下
-！[结构图](结构图.png)
+本项目我独立完成的主要工作包括：
 
-## 3.1 DFB Laser
-
-### 功能
-
-提供稳定连续光载波。
-
-### 选择原因
-
-DFB 激光器具有：
-
-* 高输出功率
-* 窄光谱线宽
-* 单模工作特性
-
-适合作为高速通信系统光源。
-
-输出：
-
-```
-Continuous Wave Optical Carrier
-```
+- 使用 Lumerical varFDTD 建立 SOI 微环谐振器模型；
+- 使用 Structure Group 实现器件几何结构参数化；
+- 建立 MRR 微环光子器件结构；
+- 设置 Mode Source 激励波导基模；
+- 使用 Frequency Domain Monitor 获取电磁场分布；
+- 使用 Transmission Monitor 获取器件透射光谱；
+- 在 1550 nm 通信波段附近寻找微环共振波长；
+- 分析共振和非共振状态下的环内电场分布；
+- 扫描微环半径、Gap 等参数对谐振特性的影响；
+- 总结微环仿真过程中常见的建模和数值计算问题。
 
 ---
 
-## 3.2 NRZ Data Generator
+# 2. 项目背景
 
-### 功能
+## 2.1 微环谐振器
 
-产生高速数字调制信号。
+微环谐振器通常由一个环形波导和一个或多个直波导组成。
 
-采用 NRZ（Non-Return-to-Zero）编码原因：
+当直波导与微环之间的距离足够小时，两者的倏逝场发生重叠，从而产生光学耦合。
 
-* 电路结构简单；
-* 频谱利用率高；
-* 广泛应用于高速光通信。
+<!-- IMAGE PLACEHOLDER -->
 
-输入：
+> Figure 1. Microring Resonator 基本结构示意图
 
-```
-Binary Data Sequence
+微环谐振器具有：
+
+- 尺寸小；
+- 易于片上集成；
+- 波长选择性强；
+- 较高 Q factor；
+- 对折射率变化敏感；
+
+等特点。
+
+因此广泛应用于：
+
+- 光学滤波器；
+- WDM 波分复用；
+- 光开关；
+- 光调制器；
+- 光学传感器；
+- 非线性光学；
+- 集成光子芯片。
+
+---
+
+## 2.2 SOI 平台
+
+本项目采用典型的 Silicon-On-Insulator（SOI）结构。
+
+核心波导材料为 Silicon，衬底材料为 SiO₂。
+
+由于 Silicon 和 SiO₂ 之间具有较大的折射率差，可以形成较强的光场限制，因此能够实现亚微米尺寸的高密度集成光波导。
+
+本项目采用的典型 Silicon 波导厚度为：
+
+```text
+H = 220 nm
 ```
 
-输出：
+工作波段主要位于：
 
-```
-Electrical NRZ Signal
-```
-
----
-
-## 3.3 Mach-Zehnder Modulator (MZM)
-
-### 功能
-
-完成外部光调制。
-
-工作原理：
-
-通过改变两个干涉臂的相位差，使连续光载波转换为携带数字信息的光信号。
-
-选择 MZM 的原因：
-
-* 调制速度高；
-* 插入损耗低；
-* 啁啾效应小；
-* 适合高速系统。
-
-输出：
-
-```
-Modulated Optical Signal
+```text
+λ ≈ 1550 nm
 ```
 
----
+# 3. 结构设计与参数设置
 
-## 3.4 Optical Attenuator
+## 3.1 微环结构
 
-### 功能
+本项目使用环形 Silicon 波导与直 Silicon Bus Waveguide 构成微环谐振器。
 
-模拟不同链路损耗条件。
+主要几何参数定义如下：
 
-通过改变 attenuation 参数：
+| Parameter | Symbol | Typical Value | Description |
+|---|---:|---:|---|
+| Ring radius | R | 3.5 μm | 微环中心线半径 |
+| Waveguide width | W | 0.4 μm | 微环及直波导宽度 |
+| Waveguide height | H | 0.22 μm | Silicon 波导厚度 |
+| Coupling gap | Gap | 0.1 μm | 环与直波导边缘间距 |
+| Bus length | L | 25 μm | 直波导长度 |
+| Substrate height | Hsub | 3 μm | SiO₂ 衬底厚度 |
 
-* 模拟光纤损耗；
-* 分析系统功率裕量；
-* 测试 BER 随功率变化关系。
-
----
-
-## 3.5 Eye Diagram Analyzer
-
-用于评价系统性能。
-
-主要测量：
-
-* Eye opening
-* Q factor
-* BER
-
-眼图越开：
-
-说明：
-
-* 信号失真越小；
-* 噪声影响越低；
-* 判决裕量越大。
+> 注：项目中的结构尺寸均采用 SI 单位写入 Lumerical Script，例如 `3.5 μm = 3.5e-6 m`。
 
 ---
 
-# 4. 参数设置
+## 3.2 微环内外半径
 
-## 4.1 扫描参数
+本项目中的 `ring_radius` 定义为微环波导的**中心线半径**。
 
-工程中建立 Sweep 参数：
+因此：
 
-```
-ATT_1 attenuation
+```text
+R_inner = R - W/2
+R_outer = R + W/2
 ```
 
-用于扫描不同光功率衰减条件。
+对于：
 
-目的：
-
-分析系统在不同接收功率下的性能变化。
-
----
-
-## 4.2 数据调制参数
-
-采用：
-
-```
-NRZ modulation
+```text
+R = 3.5 μm
+W = 0.4 μm
 ```
 
-原因：
+得到：
 
-高速数字光通信中应用广泛。
-
----
-
-## 4.3 测量参数
-
-主要输出：
-
-| 参数               | 作用     |
-| ---------------- | ------ |
-| Eye Diagram      | 判断信号质量 |
-| BER              | 衡量误码性能 |
-| Q Factor         | 衡量噪声裕度 |
-| Optical waveform | 观察调制结果 |
-
----
-
-# 5. 参数设置原因分析
-
-## 为什么采用 DFB + MZM？
-
-相比直接调制：
-
-| 方法         | 优点     | 缺点      |
-| ---------- | ------ | ------- |
-| DFB直接调制    | 结构简单   | 啁啾明显    |
-| DFB+MZM外调制 | 高速、低啁啾 | 系统复杂度增加 |
-
-本项目选择外调制方式，可以提高高速通信系统稳定性。
-
----
-
-## 为什么采用 NRZ？
-
-NRZ：
-
-* 符号间隔清晰；
-* 接收端实现简单；
-* 工业通信应用成熟。
-
-适合作为高速光链路基础验证。
-
----
-
-## 为什么进行 attenuation sweep？
-
-实际光通信链路中：
-
-光功率会受到：
-
-* 光纤损耗；
-* 连接损耗；
-* 器件插损；
-
-影响。
-
-扫描 attenuation 可以获得：
-
-系统最大损耗容限。
-
----
-
-# 6. 仿真结果分析
-
-## 6.1 光信号调制结果
-
-DFB 激光器输出连续光：
-
-```
-CW Optical Carrier
-```
-
-经过 MZM 调制后：
-
-```
-NRZ Modulated Optical Signal
-```
-
-成功加载数字信息。
-
----
-
-## 6.2 眼图结果
-
-通过 EYE_1 模块观察：
-
-理想情况下：
-
-* 眼睛开口明显；
-* 上下电平区分清晰；
-* 抖动较小。
-
-说明：
-
-系统具有较好的信号完整性。
-
----
-
-## 6.3 BER 分析
-
-BER 模块输出系统误码性能。
-
-评价标准：
-
-| BER          | 性能    |
-| ------------ | ----- |
-| <10^-9       | 高质量通信 |
-| 10^-6 ~10^-9 | 可接受   |
-| >10^-6       | 需要优化  |
-
-通过 attenuation 扫描，可以得到系统最大允许链路损耗。
-
----
-
-# 7. 达成效果
-
-本项目完成了一个完整的高速外调制光通信链路建模：
-
-## 实现功能
-
-✅ DFB 激光器建模
-✅ 外部 MZM 调制实现
-✅ NRZ 高速数据传输
-✅ 光功率损耗扫描
-✅ 眼图分析
-✅ BER 性能评估
-
-## 验证目标
-
-证明：
-
-1. DFB 激光器能够提供稳定光载波；
-2. MZM 可以实现高速低啁啾调制；
-3. 系统能够完成数字信号光传输；
-4. 可以通过 BER 和 Eye Diagram 判断链路质量。
-
----
-
-# 8. 文件说明
-
-```
-.
-├── DFB外部调制.icp        # INTERCONNECT仿真工程
-└── README.md              # 项目说明
+```text
+R_inner = 3.3 μm
+R_outer = 3.7 μm
 ```
 
 ---
 
-# 9. 总结
+## 3.3 Gap 定义
 
-本项目基于 INTERCONNECT 完成了 DFB 激光器外部调制高速光通信系统设计。
+Gap 定义为：
 
-通过 DFB 激光器提供稳定载波，利用 MZM 实现高速 NRZ 信号调制，并结合 Eye Diagram 和 BER 分析模块评价系统性能。
+> 微环外边缘与 Bus Waveguide 内侧边缘之间的最短距离。
 
-仿真结果验证了外部调制结构在高速光通信中的有效性，为后续研究高速光互连、数据中心光模块以及相干通信系统提供了基础模型。
+因此直波导中心位置满足：
+
+```text
+Y_bus = R_outer + Gap + W/2
+```
+
+即：
+
+```text
+Y_bus = R + W + Gap
+```
+
+对于：
+
+```text
+R   = 3.5 μm
+W   = 0.4 μm
+Gap = 0.1 μm
+```
+
+得到：
+
+```text
+Y_bus = 4.0 μm
+```
+
+这一点非常重要。如果直接使用中心半径计算 Gap，可能导致实际耦合间距与设计值不一致。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 2. 微环半径、波导宽度与 Gap 定义
+
+---
+
+## 3.4 Structure Group 参数化
+
+为了避免每次修改结构尺寸都重新修改 Script，本项目使用 Lumerical `Structure Group` 实现参数化建模。
+
+主要 User Properties：
+
+```text
+ring_radius
+wg_width
+wg_height
+gap
+bus_length
+substrate_height
+```
+
+推荐默认参数：
+
+```text
+ring_radius       = 3.5 μm
+wg_width          = 0.4 μm
+wg_height         = 0.22 μm
+gap               = 0.1 μm
+bus_length        = 25 μm
+substrate_height  = 3 μm
+```
+
+修改 Structure Group 中的参数后，微环内外半径、Bus Waveguide 位置和衬底尺寸均自动重新计算。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 3. Lumerical Structure Group Properties
+
+这种方式非常适合后续 Parameter Sweep。
+
+---
+
+# 4. 理论基础与仿真结果
+
+## 4.1 微环谐振条件
+
+光进入微环后会沿环形波导循环传播。
+
+当光传播一周后积累的相位满足整数倍 `2π` 时，不同 round trip 的光场发生相干叠加，形成微环谐振。
+
+基本谐振条件为：
+
+$$
+m\lambda_{res}=n_{eff}L
+$$
+
+其中：
+
+- $m$：谐振模式阶数；
+- $\lambda_{res}$：谐振波长；
+- $n_{eff}$：波导模式有效折射率；
+- $L$：微环周长。
+
+对于半径为 $R$ 的微环：
+
+$$
+L=2\pi R
+$$
+
+因此：
+
+$$
+m\lambda_{res}=n_{eff}2\pi R
+$$
+
+这意味着微环只会对某些特定波长产生明显的谐振增强。
+
+---
+
+## 4.2 倏逝场耦合
+
+直波导中的光场并不是完全限制在 Silicon 内部，在波导边界之外仍存在指数衰减的倏逝场。
+
+当微环靠近直波导时，两者倏逝场发生空间重叠，从而使光从 Bus Waveguide 耦合进入 Ring。
+
+因此耦合强度与 Gap 密切相关：
+
+```text
+Gap ↓
+→ Evanescent field overlap ↑
+→ Coupling strength ↑
+```
+
+反之：
+
+```text
+Gap ↑
+→ Evanescent field overlap ↓
+→ Coupling strength ↓
+```
+
+因此 Gap 是微环设计中最重要的参数之一。
+
+---
+
+## 4.3 Source 与 Monitor 的区别
+
+Lumerical 仿真中需要明确区分 Source 和 Monitor。
+
+### Source
+
+Source 决定：
+
+> 仿真系统中实际注入哪些波长的光。
+
+例如：
+
+```text
+Wavelength Start = 1500 nm
+Wavelength Stop  = 1600 nm
+```
+
+表示使用宽带光源激励 1500–1600 nm 波段。
+
+### Monitor
+
+Monitor 不产生光。
+
+Monitor 的作用是：
+
+> 从已经存在的仿真结果中记录特定位置、频率或波长的电磁场和功率。
+
+因此可以简单理解为：
+
+```text
+Source  = 发什么光
+Monitor = 看什么光
+```
+
+这一区别对于分析微环共振非常重要。
+
+---
+
+## 4.4 共振波长搜索
+
+为了寻找微环的谐振波长，首先使用宽带 Source，例如：
+
+```text
+1500 nm ~ 1600 nm
+```
+
+然后在输出端使用 Transmission Monitor 获取：
+
+$$
+T(\lambda)
+$$
+
+当某个波长满足微环谐振条件时，Bus Waveguide 中的光与微环发生明显的能量交换，因此在 transmission spectrum 中出现明显的共振特征。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 4. Microring Transmission Spectrum
+
+在本项目的一组仿真结果中，在约：
+
+```text
+λ ≈ 1552 nm
+```
+
+附近观察到明显的窄带共振特征。
+
+具体共振波长应根据最终高分辨率 wavelength sweep 的结果确定。
+
+---
+
+## 4.5 共振场分布
+
+找到共振波长后，可以使用 Frequency Domain Profile Monitor 单独观察该波长附近的场分布。
+
+例如：
+
+```text
+wavelength center = 1.55216 μm
+wavelength span   = 0
+frequency points  = 1
+```
+
+此时 Monitor 记录：
+
+$$
+E(x,y,\lambda=1552.16\text{ nm})
+$$
+
+用于观察该波长对应的微环电场分布。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 5. Resonance wavelength electric field distribution
+
+在非共振波长下，虽然仍可能存在一定的倏逝场耦合，但光进入微环后无法在多次 round trip 中保持相位匹配，因此不会产生明显的环内场增强。
+
+在共振波长附近，环内光场发生相干叠加，因此可以观察到更加明显的环形电场分布。
+
+---
+
+# 5. 参数扫描与结论
+
+## 5.1 Ring Radius Sweep
+
+根据：
+
+$$
+m\lambda_{res}=n_{eff}2\pi R
+$$
+
+改变微环半径 $R$ 会改变光学路径长度，因此会改变 resonance wavelength。
+
+总体趋势为：
+
+```text
+Ring Radius ↑
+        ↓
+Optical Path Length ↑
+        ↓
+Resonance Position Shift
+```
+
+因此可以通过改变微环半径调节器件工作波长。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 6. Ring radius parameter sweep
+
+---
+
+## 5.2 Gap Sweep
+
+Gap 主要控制 Bus Waveguide 与 Ring 之间的耦合强度。
+
+一般情况下：
+
+```text
+Gap ↓
+→ Coupling ↑
+```
+
+而：
+
+```text
+Gap ↑
+→ Coupling ↓
+```
+
+但 Gap 并不是越小越好。
+
+根据微环内部损耗和外部耦合强度之间的关系，器件可以处于：
+
+```text
+Under-coupling
+Critical coupling
+Over-coupling
+```
+
+三种典型状态。
+
+其中 Critical Coupling 附近通常能够得到较深的 through-port resonance dip。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 7. Gap parameter sweep
+
+因此实际设计中需要通过 Gap Sweep 找到合适的耦合区域，而不是单纯追求最小 Gap。
+
+---
+
+## 5.3 Waveguide Width Sweep
+
+改变波导宽度会改变：
+
+- 模场分布；
+- 有效折射率 $n_{eff}$；
+- 模式限制能力；
+- 微环传播常数；
+- Bus-Ring 模式重叠程度。
+
+因此改变 `wg_width` 不仅可能改变耦合强度，也会导致 resonance wavelength 发生移动。
+
+<!-- IMAGE PLACEHOLDER -->
+
+> Figure 8. Waveguide width sweep
+
+---
+
+## 5.4 仿真结论
+
+本项目通过 Lumerical varFDTD 建立了参数化 Silicon Microring Resonator 模型。
+
+仿真表明：
+
+1. 直波导中的光可以通过倏逝场耦合进入微环；
+2. 微环只有在满足相位匹配条件的特定波长附近产生明显谐振；
+3. Transmission Spectrum 可以用于寻找 resonance wavelength；
+4. Frequency Domain Profile Monitor 可以用于观察特定 resonance 下的环内场分布；
+5. Ring Radius 主要影响光程和 resonance position；
+6. Gap 对 Bus-Ring coupling strength 具有显著影响；
+7. Waveguide Width 会同时影响有效折射率、谐振波长和耦合特性；
+8. 通过 Structure Group 参数化可以方便地完成结构优化与参数扫描。
+
+---
+
+# 6. 常见问题
+
+## Q1. 为什么直波导很亮，但微环里面几乎没有光？
+
+这并不一定说明没有发生耦合。
+
+常见原因包括：
+
+### 1. 当前观察波长不在 resonance 上
+
+微环只在特定波长满足：
+
+$$
+m\lambda=n_{eff}2\pi R
+$$
+
+因此首先应该扫描 transmission spectrum，找到准确的 resonance wavelength。
+
+### 2. Field Monitor 没有记录共振波长
+
+例如真实 resonance 是：
+
+```text
+1552.16 nm
+```
+
+但 TOP Monitor 记录：
+
+```text
+1521.6 nm
+```
+
+此时看到的自然是非共振状态下的场分布。
+
+### 3. Gap 过大
+
+Gap 过大会导致倏逝场重叠减弱，使 Bus-Ring coupling 非常弱。
+
+### 4. Coupling Region Mesh 太粗
+
+例如：
+
+```text
+Gap = 100 nm
+```
+
+如果 mesh size 也达到几十甚至上百纳米，则无法准确描述耦合区域。
+
+建议在 coupling region 使用局部 mesh override，例如：
+
+```text
+dx <= 10~20 nm
+dy <= 10~20 nm
+```
+
+---
+
+## Q2. 为什么修改 Monitor 的波长，而不是 Source？
+
+两者功能不同。
+
+```text
+Source
+   ↓
+决定系统中有什么波长的光
+
+Monitor
+   ↓
+决定记录哪个波长的结果
+```
+
+如果 Source 已经覆盖：
+
+```text
+1500 ~ 1600 nm
+```
+
+那么 1552.16 nm 已经包含在 Source 中。
+
+此时将 Field Monitor 设置到：
+
+```text
+1552.16 nm
+```
+
+只是为了提取：
+
+$$
+E(x,y,1552.16\text{ nm})
+$$
+
+并不会产生新的光。
+
+---
+
+## Q3. 为什么第一次仿真使用 Broadband Source？
+
+因为在仿真之前通常不知道准确的 resonance wavelength。
+
+因此先：
+
+```text
+Broadband Source
+1500 ~ 1600 nm
+        ↓
+Transmission Spectrum
+        ↓
+Find Resonance
+        ↓
+λres
+```
+
+然后再针对 $\lambda_{res}$ 进行高分辨率仿真和场分布分析。
+
+---
+
+## Q4. 为什么 Transmission Monitor 出现负值？
+
+Transmission 的符号可能与 Monitor 的法向方向和功率传播方向有关。
+
+因此负值不一定表示“负的光功率”。
+
+需要检查：
+
+- Monitor orientation；
+- propagation direction；
+- power flow direction；
+- 数据具体定义。
+
+分析 spectrum 时应确保使用正确的 transmission quantity，而不是简单地把复数结果的 `Re` 当作最终功率透射率。
+
+---
+
+## Q5. 为什么 resonance 很尖，Field Monitor 却看不到？
+
+可能是 Frequency Points 太少。
+
+例如 resonance 位于：
+
+```text
+1552.16 nm
+```
+
+但 Monitor 只采样：
+
+```text
+1540 nm
+1550 nm
+1560 nm
+```
+
+那么 resonance 会被完全错过。
+
+寻找 resonance 时应该增加 wavelength/frequency sampling resolution。
+
+找到 resonance 后，可以单独设置：
+
+```text
+wavelength center = 1.55216 μm
+wavelength span   = 0
+frequency points  = 1
+```
+
+直接观察对应的场分布。
+
+---
+
+## Q6. 为什么 Gap 的计算不能直接使用 Ring Radius？
+
+如果 `ring_radius` 定义的是中心线半径，那么微环外半径为：
+
+$$
+R_{outer}=R+\frac{W}{2}
+$$
+
+所以 Bus Waveguide 的中心位置应该为：
+
+$$
+Y_{bus}=R_{outer}+Gap+\frac{W}{2}
+$$
+
+即：
+
+$$
+Y_{bus}=R+W+Gap
+$$
+
+否则实际 edge-to-edge Gap 会与设置值不同。
+
+---
+
+## Q7. 为什么 Gap = 100 nm 时需要局部细网格？
+
+因为耦合发生在一个非常小的空间区域。
+
+如果：
+
+```text
+Gap = 100 nm
+Mesh = 100 nm
+```
+
+整个 Gap 可能只有约一个网格单元，无法准确描述倏逝场。
+
+因此 coupling region 通常需要比其他区域更细的 mesh。
+
+---
+
+## Q8. 为什么仿真时间太短会影响微环结果？
+
+微环属于谐振结构。
+
+光耦合进入 Ring 后需要经过多次 round trip，才能逐渐建立稳定的 resonant field。
+
+如果 simulation time 太短：
+
+```text
+Source excitation
+      ↓
+Light enters ring
+      ↓
+Simulation ends too early
+      ↓
+Resonance has not fully built up
+```
+
+因此高 Q 微环通常需要更长的仿真时间，并应结合 auto shutoff 等条件判断仿真是否充分收敛。
+
+---
+
+# 7. Project Structure
+
+推荐仓库目录：
+
+```text
+MRR-Lumerical/
+│
+├── README.md
+│
+├── simulation/
+│   ├── MRR_varFDTD.lms
+│   └── MRR_parameterized.lms
+│
+├── scripts/
+│   ├── create_MRR.lsf
+│   ├── transmission_analysis.lsf
+│   └── parameter_sweep.lsf
+│
+├── results/
+│   ├── transmission/
+│   ├── field/
+│   └── sweep/
+│
+└── images/
+    ├── structure.png
+    ├── transmission.png
+    ├── resonance_field.png
+    └── parameter_sweep.png
+```
+
+---
+
+# 8. Software
+
+本项目主要使用：
+
+- **Ansys Lumerical MODE**
+- **varFDTD**
+- **Lumerical Script (.lsf)**
+
+仿真文件建议使用：
+
+```text
+.lms
+```
+
+脚本文件：
+
+```text
+.lsf
+```
+
+---
+
+# 9. Future Work
+
+后续可以进一步研究：
+
+- Resonance wavelength 自动提取；
+- FSR (Free Spectral Range)；
+- FWHM 自动计算；
+- Q Factor 自动计算；
+- Extinction Ratio；
+- Critical Coupling 条件；
+- Ring Radius Sweep；
+- Gap Sweep；
+- Waveguide Width Sweep；
+- Add-Drop Microring Resonator；
+- 多环级联滤波器；
+- 微环折射率传感；
+- 热光调谐；
+- 与实验测试结果进行对比。
+
+---
+
+# 10. License
+
+This project is intended for learning, research and integrated photonics simulation.
+
+---
+
+## Author
+
+**MRR-Lumerical**
+
+Silicon Photonics / Microring Resonator / Lumerical varFDTD
