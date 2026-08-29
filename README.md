@@ -274,45 +274,7 @@ Gap ↑
 
 ---
 
-## 4.3 Source 与 Monitor 的区别
-
-Lumerical 仿真中需要明确区分 Source 和 Monitor。
-
-### Source
-
-Source 决定：
-
-> 仿真系统中实际注入哪些波长的光。
-
-例如：
-
-```text
-Wavelength Start = 1500 nm
-Wavelength Stop  = 1600 nm
-```
-
-表示使用宽带光源激励 1500–1600 nm 波段。
-
-### Monitor
-
-Monitor 不产生光。
-
-Monitor 的作用是：
-
-> 从已经存在的仿真结果中记录特定位置、频率或波长的电磁场和功率。
-
-因此可以简单理解为：
-
-```text
-Source  = 发什么光
-Monitor = 看什么光
-```
-
-这一区别对于分析微环共振非常重要。
-
----
-
-## 4.4 共振波长搜索
+## 4.3 共振波长搜索
 
 为了寻找微环的谐振波长，首先使用宽带 Source，例如：
 
@@ -344,7 +306,7 @@ $$
 
 ---
 
-## 4.5 共振场分布
+## 4.4 共振场分布
 
 找到共振波长后，可以使用 Frequency Domain Profile Monitor 单独观察该波长附近的场分布。
 
@@ -444,23 +406,7 @@ Over-coupling
 
 ---
 
-## 5.3 Waveguide Width Sweep
 
-改变波导宽度会改变：
-
-- 模场分布；
-- 有效折射率 $n_{eff}$；
-- 模式限制能力；
-- 微环传播常数；
-- Bus-Ring 模式重叠程度。
-
-因此改变 `wg_width` 不仅可能改变耦合强度，也会导致 resonance wavelength 发生移动。
-
-<!-- IMAGE PLACEHOLDER -->
-
-> Figure 8. Waveguide width sweep
-
----
 
 ## 5.4 仿真结论
 
@@ -468,14 +414,11 @@ Over-coupling
 
 仿真表明：
 
-1. 直波导中的光可以通过倏逝场耦合进入微环；
-2. 微环只有在满足相位匹配条件的特定波长附近产生明显谐振；
-3. Transmission Spectrum 可以用于寻找 resonance wavelength；
-4. Frequency Domain Profile Monitor 可以用于观察特定 resonance 下的环内场分布；
-5. Ring Radius 主要影响光程和 resonance position；
-6. Gap 对 Bus-Ring coupling strength 具有显著影响；
-7. Waveguide Width 会同时影响有效折射率、谐振波长和耦合特性；
-8. 通过 Structure Group 参数化可以方便地完成结构优化与参数扫描。
+1. 微环只有在满足相位匹配条件的特定波长附近产生明显谐振；
+2. Transmission Spectrum 可以用于寻找 resonance wavelength；
+3. Ring Radius 主要影响光程和 resonance position；
+4. Gap 对 Bus-Ring coupling strength 具有显著影响；
+5. 通过 Structure Group 参数化可以方便地完成结构优化与参数扫描。
 
 ---
 
@@ -709,39 +652,7 @@ Resonance has not fully built up
 
 ---
 
-# 7. Project Structure
-
-推荐仓库目录：
-
-```text
-MRR-Lumerical/
-│
-├── README.md
-│
-├── simulation/
-│   ├── MRR_varFDTD.lms
-│   └── MRR_parameterized.lms
-│
-├── scripts/
-│   ├── create_MRR.lsf
-│   ├── transmission_analysis.lsf
-│   └── parameter_sweep.lsf
-│
-├── results/
-│   ├── transmission/
-│   ├── field/
-│   └── sweep/
-│
-└── images/
-    ├── structure.png
-    ├── transmission.png
-    ├── resonance_field.png
-    └── parameter_sweep.png
-```
-
----
-
-# 8. Software
+# 7. Software
 
 本项目主要使用：
 
@@ -749,21 +660,9 @@ MRR-Lumerical/
 - **varFDTD**
 - **Lumerical Script (.lsf)**
 
-仿真文件建议使用：
-
-```text
-.lms
-```
-
-脚本文件：
-
-```text
-.lsf
-```
-
 ---
 
-# 9. Future Work
+# 8. Future Work
 
 后续可以进一步研究：
 
@@ -777,14 +676,12 @@ MRR-Lumerical/
 - Gap Sweep；
 - Waveguide Width Sweep；
 - Add-Drop Microring Resonator；
-- 多环级联滤波器；
 - 微环折射率传感；
 - 热光调谐；
-- 与实验测试结果进行对比。
 
 ---
 
-# 10. License
+# 9. License
 
 This project is intended for learning, research and integrated photonics simulation.
 
