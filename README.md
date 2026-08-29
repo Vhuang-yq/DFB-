@@ -169,9 +169,6 @@ Y_bus = 4.0 μm
 
 这一点非常重要。如果直接使用中心半径计算 Gap，可能导致实际耦合间距与设计值不一致。
 
-<!-- IMAGE PLACEHOLDER -->
-
-> Figure 2. 微环半径、波导宽度与 Gap 定义
 
 ---
 
@@ -179,13 +176,11 @@ Y_bus = 4.0 μm
 
 为了避免每次修改结构尺寸都重新修改 Script，本项目使用 Lumerical `Structure Group` 实现参数化建模。
 
-```
-
 推荐默认参数：
 ![Parameter settings of Structure Group](structure_group_params.png)
 > Figure 2. Parameter settings
 
-修改 Structure Group 中的参数后，微环内外半径、Bus Waveguide 位置和衬底尺寸均自动重新计算。
+修改 Structure Group 中的参数后，微环内外半径、Gap宽度均自动重新计算。
 
 这种方式非常适合后续 Parameter Sweep。
 
@@ -256,7 +251,7 @@ Gap ↑
 
 ## 4.3 共振波长搜索
 
-为了寻找微环的谐振波长，首先使用宽带 Source，例如：
+为了寻找微环的谐振波长，先仿真一段范围内的波长，例如本次我们选取的波长范围是：
 
 ```text
 1500 nm ~ 1600 nm
