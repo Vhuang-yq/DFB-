@@ -179,33 +179,13 @@ Y_bus = 4.0 μm
 
 为了避免每次修改结构尺寸都重新修改 Script，本项目使用 Lumerical `Structure Group` 实现参数化建模。
 
-主要 User Properties：
-
-```text
-ring_radius
-wg_width
-wg_height
-gap
-bus_length
-substrate_height
 ```
 
 推荐默认参数：
-
-```text
-ring_radius       = 3.5 μm
-wg_width          = 0.4 μm
-wg_height         = 0.22 μm
-gap               = 0.1 μm
-bus_length        = 25 μm
-substrate_height  = 3 μm
-```
+![推荐默认参数](Structure Group参数.png)
+> Figure 2. 推荐默认参数
 
 修改 Structure Group 中的参数后，微环内外半径、Bus Waveguide 位置和衬底尺寸均自动重新计算。
-
-<!-- IMAGE PLACEHOLDER -->
-
-> Figure 3. Lumerical Structure Group Properties
 
 这种方式非常适合后续 Parameter Sweep。
 
