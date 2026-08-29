@@ -41,9 +41,9 @@
 
 当直波导与微环之间的距离足够小时，两者的倏逝场发生重叠，从而产生光学耦合。
 
-<!-- IMAGE PLACEHOLDER -->
-
+![Microring Resonator 基本结构示意图](结构图.png)
 > Figure 1. Microring Resonator 基本结构示意图
+
 
 微环谐振器具有：
 
