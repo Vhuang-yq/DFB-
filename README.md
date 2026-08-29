@@ -265,19 +265,16 @@ $$
 
 当某个波长满足微环谐振条件时，Bus Waveguide 中的光与微环发生明显的能量交换，因此在 transmission spectrum 中出现明显的共振特征。
 
-<!-- IMAGE PLACEHOLDER -->
+![1.5-1.6的谐振谱](1.5-1.6.png)
+> Figure 3. 谐振谱
 
-> Figure 4. Microring Transmission Spectrum
-
-在本项目的一组仿真结果中，在约：
+在一组仿真结果中，我们可以鸣谢看到在约：
 
 ```text
 λ ≈ 1552 nm
 ```
 
-附近观察到明显的窄带共振特征。
-
-具体共振波长应根据最终高分辨率 wavelength sweep 的结果确定。
+附近观察到明显的共振特性。
 
 ---
 
