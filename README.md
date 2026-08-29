@@ -182,8 +182,8 @@ Y_bus = 4.0 μm
 ```
 
 推荐默认参数：
-![推荐默认参数](Structure Group参数.png)
-> Figure 2. 推荐默认参数
+![Parameter settings of Structure Group](structure_group_params.png)
+> Figure 2. Parameter settings
 
 修改 Structure Group 中的参数后，微环内外半径、Bus Waveguide 位置和衬底尺寸均自动重新计算。
 
