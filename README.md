@@ -280,15 +280,8 @@ $$
 
 ## 4.4 共振场分布
 
-找到共振波长后，可以使用 Frequency Domain Profile Monitor 单独观察该波长附近的场分布。
+找到共振波长后，可以调整mode source的波长为 λ ≈ 1552 nm 单独观察该波长附近的场分布。
 
-例如：
-
-```text
-wavelength center = 1.55216 μm
-wavelength span   = 0
-frequency points  = 1
-```
 
 此时 Monitor 记录：
 
