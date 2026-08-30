@@ -348,8 +348,10 @@ Over-coupling
 ## 5.3 mesh
 
 mesh的作用在于：
+
 以下是在gap处添加mesh的Sweep扫参图，我们可以明显看到
 
+---
 
 ## 5.4 仿真结论
 
@@ -373,7 +375,7 @@ mesh的作用在于：
 
 常见原因包括：
 
-### 1. 当前观察波长不在 resonance 上
+### 1. 当前波长不在 谐振波长 上
 
 微环只在特定波长满足：
 
@@ -381,88 +383,17 @@ $$
 m\lambda=n_{eff}2\pi R
 $$
 
-因此首先应该扫描 transmission spectrum，找到准确的 resonance wavelength。
+因此首先应该扫描 1500-1600nm范围内的波长，找到准确的谐振波长。
 
-### 2. Field Monitor 没有记录共振波长
+### 2. Gap 过大
 
-例如真实 resonance 是：
-
-```text
-1552.16 nm
-```
-
-但 TOP Monitor 记录：
-
-```text
-1521.6 nm
-```
-
-此时看到的自然是非共振状态下的场分布。
-
-### 3. Gap 过大
-
-Gap 过大会导致倏逝场重叠减弱，使 Bus-Ring coupling 非常弱。
-
-### 4. Coupling Region Mesh 太粗
-
-例如：
-
-```text
-Gap = 100 nm
-```
-
-如果 mesh size 也达到几十甚至上百纳米，则无法准确描述耦合区域。
-
-建议在 coupling region 使用局部 mesh override，例如：
-
-```text
-dx <= 10~20 nm
-dy <= 10~20 nm
-```
+Gap 过大会导致倏逝场重叠减弱，使直波导和微环间的耦合非常弱。
 
 ---
 
-## Q2. 为什么修改 Monitor 的波长，而不是 Source？
+## Q2. 为什么第一次仿真使用 Broadband Source？
 
-两者功能不同。
-
-```text
-Source
-   ↓
-决定系统中有什么波长的光
-
-Monitor
-   ↓
-决定记录哪个波长的结果
-```
-
-如果 Source 已经覆盖：
-
-```text
-1500 ~ 1600 nm
-```
-
-那么 1552.16 nm 已经包含在 Source 中。
-
-此时将 Field Monitor 设置到：
-
-```text
-1552.16 nm
-```
-
-只是为了提取：
-
-$$
-E(x,y,1552.16\text{ nm})
-$$
-
-并不会产生新的光。
-
----
-
-## Q3. 为什么第一次仿真使用 Broadband Source？
-
-因为在仿真之前通常不知道准确的 resonance wavelength。
+因为在仿真之前通常不知道准确的 谐振波长。
 
 因此先：
 
@@ -481,24 +412,7 @@ Find Resonance
 
 ---
 
-## Q4. 为什么 Transmission Monitor 出现负值？
-
-Transmission 的符号可能与 Monitor 的法向方向和功率传播方向有关。
-
-因此负值不一定表示“负的光功率”。
-
-需要检查：
-
-- Monitor orientation；
-- propagation direction；
-- power flow direction；
-- 数据具体定义。
-
-分析 spectrum 时应确保使用正确的 transmission quantity，而不是简单地把复数结果的 `Re` 当作最终功率透射率。
-
----
-
-## Q5. 为什么 resonance 很尖，Field Monitor 却看不到？
+## Q3. 为什么 resonance 很尖，Field Monitor 却看不到？
 
 可能是 Frequency Points 太少。
 
@@ -532,31 +446,7 @@ frequency points  = 1
 
 ---
 
-## Q6. 为什么 Gap 的计算不能直接使用 Ring Radius？
-
-如果 `ring_radius` 定义的是中心线半径，那么微环外半径为：
-
-$$
-R_{outer}=R+\frac{W}{2}
-$$
-
-所以 Bus Waveguide 的中心位置应该为：
-
-$$
-Y_{bus}=R_{outer}+Gap+\frac{W}{2}
-$$
-
-即：
-
-$$
-Y_{bus}=R+W+Gap
-$$
-
-否则实际 edge-to-edge Gap 会与设置值不同。
-
----
-
-## Q7. 为什么 Gap = 100 nm 时需要局部细网格？
+## Q4. 为什么 Gap = 100 nm 时需要局部细网格？
 
 因为耦合发生在一个非常小的空间区域。
 
@@ -573,7 +463,7 @@ Mesh = 100 nm
 
 ---
 
-## Q8. 为什么仿真时间太短会影响微环结果？
+## Q5. 为什么仿真时间太短会影响微环结果？
 
 微环属于谐振结构。
 
