@@ -225,24 +225,16 @@ $$
 
 ## 4.2 倏逝场耦合
 
-直波导中的光场并不是完全限制在 Silicon 内部，在波导边界之外仍存在指数衰减的倏逝场。
+直波导中的光场并不是完全限制在 波导 内部，在波导边界之外仍存在指数衰减的倏逝场。
 
-当微环靠近直波导时，两者倏逝场发生空间重叠，从而使光从 Bus Waveguide 耦合进入 Ring。
+当微环靠近直波导时，两者**倏逝场**发生空间重叠，从而使光从直波导耦合进入微环中。
 
 因此耦合强度与 Gap 密切相关：
 
 ```text
 Gap ↓
-→ Evanescent field overlap ↑
-→ Coupling strength ↑
-```
-
-反之：
-
-```text
-Gap ↑
-→ Evanescent field overlap ↓
-→ Coupling strength ↓
+→ 倏逝场（Evanescent field overlap） ↑
+→ 耦合强度（Coupling strength） ↑
 ```
 
 因此 Gap 是微环设计中最重要的参数之一。
