@@ -316,10 +316,8 @@ Resonance Position Shift
 
 因此可以通过改变微环半径调节器件工作波长。
 
-<!-- IMAGE PLACEHOLDER -->
-
-> Figure 6. Ring radius parameter sweep
-
+![gap_0-0.6um扫参结果](Sweep扫参.png)
+> Figure 5. gap_0-0.6um扫参结果
 ---
 
 ## 5.2 Gap Sweep
