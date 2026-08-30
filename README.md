@@ -302,7 +302,48 @@ Over-coupling
 ## 5.2 数据分析
 我截取FDTD的透射谱图像，如下：
 
-使用Python进行画图和数据分析，图像如下
+![1.5-1.6的谐振谱](1.5-1.6.png)
+> Figure 3. 谐振谱
+
+使用Python进行画图和数据分析，图像如下：
+
+![透射谱数据分析](下方透射谱图像.png)
+> Figure 6. 谐振谱
+
+本次仿真针对微环谐振器（MRR）1500–1600 nm光通信波段开展透射光谱扫描，提取三组数据，完成自由光谱范围（FSR）、半高全宽（FWHM）、品质因子（Q值）核心光学参数的计算与性能分析。
+5.2.1. 谐振波长与透射率
+提取波段内三组有效谐振点，统计各谐振波长对应的最低透射率，表征微环谐振凹陷深度：
+谐振波长 (nm)
+最低点透射率 Tmin
+λ = 1521.99nm T = 0.09214
+
+λ = 1552.16nm T = 0.03338
+
+λ = 1583.55nm T = 0.01494
+
+5.2.2. 自由光谱范围 FSR 计算
+自由光谱范围（FSR）是微环谐振器件的核心性能指标，定义**为相邻两个谐振波长的间隔**，直接决定器件的有效工作带宽。本次基于实测谐振波长完成FSR计算：
+
+FSR 计算结果
+1521.99 nm → 1552.16 nm
+**FSR = 30.17 nm**
+1552.16 nm → 1583.55 nm
+**FSR = 31.39 nm**
+平均自由光谱范围（平均FSR）：30.78 nm
+
+5.2.3. 1552nm 通信波段谐振点 Q 值精细分析
+1550nm波段为光通信核心工作波段，本次选取1552.16nm最优谐振点，开展高精度线宽与品质因子计算，参数及计算过程如下：
+- 谐振中心波长：1552.16 nm
+- 谐振最低点透射率：0.03338
+- 器件背景平直透射率：0.98103
+- 谐振半陷透射阈值（半高深）：0.50721
+- 半高宽左截止波长：1551.456 nm
+- 半高宽右截止波长：1552.954 nm
+- 谐振线宽（FWHM）：1.499 nm
+品质因子Q值是衡量微环谐振器损耗与谐振性能的关键指标，计算公式为：谐振中心波长与谐振线宽的比值
+**Q = 谐振波长 / 半高全宽（FWHM）= 1552.16 / 1.499 ≈ 1036**
+5.2.4. 仿真结果总结
+本次搭建的硅基微环谐振器参数化仿真模型性能稳定，在1500–1600nm光通信波段可实现有效谐振响应。器件平均自由光谱范围达30.78nm，核心通信波段谐振Q值可达1036，谐振凹陷深度优异、损耗特性良好，符合常规无源硅光微环器件的设计指标，能够满足光滤波、光学谐振传感、光信号处理等基础硅光应用场景的使用需求。
 
 ---
 
@@ -317,127 +358,10 @@ Over-coupling
 3. Gap 对 Bus-Ring coupling strength 具有显著影响；
 4. 通过 Structure Group 参数化可以方便地完成结构优化与参数扫描。
    
----
-
-# 6. 常见问题
-
-## Q1. 为什么直波导很亮，但微环里面几乎没有光？
-
-这并不一定说明没有发生耦合。
-
-常见原因包括：
-
-### 1. 当前波长不在 谐振波长 上
-
-微环只在特定波长满足：
-
-$$
-m\lambda=n_{eff}2\pi R
-$$
-
-因此首先应该扫描 1500-1600nm范围内的波长，找到准确的谐振波长。
-
-### 2. Gap 过大
-
-Gap 过大会导致倏逝场重叠减弱，使直波导和微环间的耦合非常弱。
 
 ---
 
-## Q2. 为什么第一次仿真使用 Broadband Source？
-
-因为在仿真之前通常不知道准确的 谐振波长。
-
-因此先：
-
-```text
-Broadband Source
-1500 ~ 1600 nm
-        ↓
-Transmission Spectrum
-        ↓
-Find Resonance
-        ↓
-λres
-```
-
-然后再针对 $\lambda_{res}$ 进行高分辨率仿真和场分布分析。
-
----
-
-## Q3. 为什么 resonance 很尖，Field Monitor 却看不到？
-
-可能是 Frequency Points 太少。
-
-例如 resonance 位于：
-
-```text
-1552.16 nm
-```
-
-但 Monitor 只采样：
-
-```text
-1540 nm
-1550 nm
-1560 nm
-```
-
-那么 resonance 会被完全错过。
-
-寻找 resonance 时应该增加 wavelength/frequency sampling resolution。
-
-找到 resonance 后，可以单独设置：
-
-```text
-wavelength center = 1.55216 μm
-wavelength span   = 0
-frequency points  = 1
-```
-
-直接观察对应的场分布。
-
----
-
-## Q4. 为什么 Gap = 100 nm 时需要局部细网格？
-
-因为耦合发生在一个非常小的空间区域。
-
-如果：
-
-```text
-Gap = 100 nm
-Mesh = 100 nm
-```
-
-整个 Gap 可能只有约一个网格单元，无法准确描述倏逝场。
-
-因此 coupling region 通常需要比其他区域更细的 mesh。
-
----
-
-## Q5. 为什么仿真时间太短会影响微环结果？
-
-微环属于谐振结构。
-
-光耦合进入 Ring 后需要经过多次 round trip，才能逐渐建立稳定的 resonant field。
-
-如果 simulation time 太短：
-
-```text
-Source excitation
-      ↓
-Light enters ring
-      ↓
-Simulation ends too early
-      ↓
-Resonance has not fully built up
-```
-
-因此高 Q 微环通常需要更长的仿真时间，并应结合 auto shutoff 等条件判断仿真是否充分收敛。
-
----
-
-# 7. Software
+# 6. Software
 
 本项目主要使用：
 
@@ -448,7 +372,7 @@ Resonance has not fully built up
 
 ---
 
-# 8. License
+# 7. License
 
 This project is intended for learning, research and integrated photonics simulation.
 
