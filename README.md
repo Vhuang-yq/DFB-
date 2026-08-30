@@ -269,34 +269,11 @@ $$
 
 ---
 
-# 5. 参数扫描与结论
-
-## 5.1 Ring Radius Sweep
-
-根据：
-
-$$
-m\lambda_{res}=n_{eff}2\pi R
-$$
-
-改变微环半径 $R$ 会改变光学路径长度，因此会改变 resonance wavelength。
-
-总体趋势为：
-
-```text
-Ring Radius ↑
-        ↓
-Optical Path Length ↑
-        ↓
-Resonance Position Shift
-```
-
-因此可以通过改变微环半径调节器件工作波长。
-
+# 5. 参数扫描与数据分析
 
 ---
 
-## 5.2 Gap Sweep
+## 5.1 Gap Sweep
 
 Gap 主要控制 直波导 与 微环 之间的耦合强度。
 
@@ -322,15 +299,14 @@ Over-coupling
 
 ---
 
-## 5.3 mesh
+## 5.2 数据分析
+我截取FDTD的透射谱图像，如下：
 
-mesh的作用在于：
-
-以下是在gap处添加mesh的Sweep扫参图，我们可以明显看到
+使用Python进行画图和数据分析，图像如下
 
 ---
 
-## 5.4 仿真结论
+## 5.3 仿真结论
 
 本项目通过 Lumerical varFDTD 建立了参数化 Silicon Microring Resonator 模型。
 
@@ -469,28 +445,10 @@ Resonance has not fully built up
 - **varFDTD**
 - **Lumerical Script (.lsf)**
 
----
-
-# 8. Future Work
-
-后续可以进一步研究：
-
-- Resonance wavelength 自动提取；
-- FSR (Free Spectral Range)；
-- FWHM 自动计算；
-- Q Factor 自动计算；
-- Extinction Ratio；
-- Critical Coupling 条件；
-- Ring Radius Sweep；
-- Gap Sweep；
-- Waveguide Width Sweep；
-- Add-Drop Microring Resonator；
-- 微环折射率传感；
-- 热光调谐；
 
 ---
 
-# 9. License
+# 8. License
 
 This project is intended for learning, research and integrated photonics simulation.
 
