@@ -316,13 +316,12 @@ Resonance Position Shift
 
 因此可以通过改变微环半径调节器件工作波长。
 
-![gap_0-0.6um扫参结果](Sweep扫参.png)
-> Figure 5. gap_0-0.6um扫参结果
+
 ---
 
 ## 5.2 Gap Sweep
 
-Gap 主要控制 Bus Waveguide 与 Ring 之间的耦合强度。
+Gap 主要控制 直波导 与 微环 之间的耦合强度。
 
 一般情况下：
 
@@ -330,14 +329,6 @@ Gap 主要控制 Bus Waveguide 与 Ring 之间的耦合强度。
 Gap ↓
 → Coupling ↑
 ```
-
-而：
-
-```text
-Gap ↑
-→ Coupling ↓
-```
-
 但 Gap 并不是越小越好。
 
 根据微环内部损耗和外部耦合强度之间的关系，器件可以处于：
@@ -347,19 +338,17 @@ Under-coupling
 Critical coupling
 Over-coupling
 ```
-
-三种典型状态。
-
-其中 Critical Coupling 附近通常能够得到较深的 through-port resonance dip。
-
-<!-- IMAGE PLACEHOLDER -->
-
-> Figure 7. Gap parameter sweep
-
 因此实际设计中需要通过 Gap Sweep 找到合适的耦合区域，而不是单纯追求最小 Gap。
+
+![gap_0-0.6um扫参结果](Sweep扫参.png)
+> Figure 5. gap_0-0.6um扫参结果
 
 ---
 
+## 5.3 mesh
+
+mesh的作用在于：
+以下是在gap处添加mesh的Sweep扫参图，我们可以明显看到
 
 
 ## 5.4 仿真结论
